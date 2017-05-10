@@ -622,6 +622,10 @@ var PDFViewerApplication = {
       }
     }
 
+    // BEGIN SUNVALLEYBRONZE.COM: PREVENT CACHING
+    parameters.url += '?nonce=' + (new Date()).toISOString();
+    // BEGIN SUNVALLEYBRONZE.COM: PREVENT CACHING
+
     var self = this;
     self.downloadComplete = false;
 
@@ -1327,9 +1331,13 @@ function validateFileURL(file) {
     // Removing of the following line will not guarantee that the viewer will
     // start accepting URLs from foreign origin -- CORS headers on the remote
     // server must be properly configured.
-    if (fileOrigin !== viewerOrigin) {
-      throw new Error('file origin does not match viewer\'s');
-    }
+
+    // BEGIN SUNVALLEYBRONZE.COM: ALLOW REMOTE FILES
+    // if (fileOrigin !== viewerOrigin) {
+    //   throw new Error('file origin does not match viewer\'s');
+    // }
+    // END SUNVALLEYBRONZE.COM: ALLOW REMOTE FILES
+
   } catch (e) {
     var message = e && e.message;
     var loadingErrorMessage = mozL10n.get('loading_error', null,
@@ -1387,8 +1395,12 @@ function webViewerInitialized() {
   document.body.appendChild(fileInput);
 
   if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-    appConfig.toolbar.openFile.setAttribute('hidden', 'true');
-    appConfig.secondaryToolbar.openFileButton.setAttribute('hidden', 'true');
+
+    // BEGIN SUNVALLEYBRONZE.COM: NOT USING THESE
+    // appConfig.toolbar.openFile.setAttribute('hidden', 'true');
+    // appConfig.secondaryToolbar.openFileButton.setAttribute('hidden', 'true');
+    // END SUNVALLEYBRONZE.COM: NOT USING THESE
+
   } else {
     fileInput.value = null;
   }
@@ -1554,9 +1566,11 @@ function webViewerInitialized() {
 
   });
 
-  appConfig.toolbar.openFile.addEventListener('click', function (e) {
-    PDFViewerApplication.eventBus.dispatch('openfile');
-  });
+  // BEGIN SUNVALLEYBRONZE.COM: NOT USING THIS
+  // appConfig.toolbar.openFile.addEventListener('click', function (e) {
+  //   PDFViewerApplication.eventBus.dispatch('openfile');
+  // });
+  // END SUNVALLEYBRONZE.COM: NOT USING THIS
 
   appConfig.toolbar.print.addEventListener('click', function (e) {
     PDFViewerApplication.eventBus.dispatch('print');
@@ -1773,9 +1787,11 @@ function webViewerUpdateViewarea(e) {
   }
   var href =
     PDFViewerApplication.pdfLinkService.getAnchorUrl(location.pdfOpenParams);
-  PDFViewerApplication.appConfig.toolbar.viewBookmark.href = href;
-  PDFViewerApplication.appConfig.secondaryToolbar.viewBookmarkButton.href =
-    href;
+  
+  // BEGIN SUNVALLEYBRONZE.COM: NOT USING THESE
+  // PDFViewerApplication.appConfig.toolbar.viewBookmark.href = href;
+  // PDFViewerApplication.appConfig.secondaryToolbar.viewBookmarkButton.href = href;
+  // END SUNVALLEYBRONZE.COM: NOT USING THESE
 
   // Update the current bookmark in the browsing history.
   PDFViewerApplication.pdfHistory.updateCurrentBookmark(location.pdfOpenParams,
@@ -1868,8 +1884,12 @@ function webViewerFileInputChange(e) {
 
   // URL does not reflect proper document location - hiding some icons.
   var appConfig = PDFViewerApplication.appConfig;
-  appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
-  appConfig.secondaryToolbar.viewBookmarkButton.setAttribute('hidden', 'true');
+
+  // BEGIN SUNVALLEYBRONZE.COM: NOT USING THESE
+  // appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
+  // appConfig.secondaryToolbar.viewBookmarkButton.setAttribute('hidden', 'true');
+  // END SUNVALLEYBRONZE.COM: NOT USING THESE
+
   appConfig.toolbar.download.setAttribute('hidden', 'true');
   appConfig.secondaryToolbar.downloadButton.setAttribute('hidden', 'true');
 }

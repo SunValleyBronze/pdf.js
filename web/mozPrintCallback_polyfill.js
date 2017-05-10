@@ -46,7 +46,12 @@
       dispatchEvent('beforeprint');
     } finally {
       canvases = document.querySelectorAll('canvas');
-      index = -1;
+      // BEGIN SUNVALLEYBRONZE.COM: SUPPORT SINGLE PAGE PRINTING
+      if (typeof(PAGE_TO_PRINT) === 'undefined') {
+        var PAGE_TO_PRINT = 0;
+      }
+      index = PAGE_TO_PRINT - 1;
+      // END SUNVALLEYBRONZE.COM: SUPPORT SINGLE PAGE PRINTING
       next();
     }
   };
@@ -63,7 +68,10 @@
     }
 
     renderProgress();
-    if (++index < canvases.length) {
+    // BEGIN SUNVALLEYBRONZE.COM: SUPPORT SINGLE PAGE PRINTING
+    var max = PAGE_TO_PRINT ? PAGE_TO_PRINT + 1 : canvases.length;
+    if (++index < max) {
+    // END SUNVALLEYBRONZE.COM: SUPPORT SINGLE PAGE PRINTING
       var canvas = canvases[index];
       if (typeof canvas.mozPrintCallback === 'function') {
         canvas.mozPrintCallback({

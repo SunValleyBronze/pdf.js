@@ -16,6 +16,8 @@
 
 'use strict';
 
+var PAGE_TO_PRINT;
+
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     define('pdfjs-web/mozPrintCallback_polyfill', ['exports'], factory);
@@ -47,8 +49,8 @@
     } finally {
       canvases = document.querySelectorAll('canvas');
       // BEGIN SUNVALLEYBRONZE.COM: SUPPORT SINGLE PAGE PRINTING
-      if (typeof(PAGE_TO_PRINT) === 'undefined') {
-        var PAGE_TO_PRINT = 0;
+      if (!PAGE_TO_PRINT) {
+        PAGE_TO_PRINT = 0;
       }
       index = PAGE_TO_PRINT - 1;
       // END SUNVALLEYBRONZE.COM: SUPPORT SINGLE PAGE PRINTING

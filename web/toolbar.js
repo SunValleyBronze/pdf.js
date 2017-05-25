@@ -163,9 +163,11 @@ var Toolbar = (function ToolbarClosure() {
         eventBus.dispatch('presentationmode');
       });
 
-      items.openFile.addEventListener('click', function (e) {
-        eventBus.dispatch('openfile');
-      });
+      // BEGIN SUNVALLEYBRONZE.COM: NOT USING THESE
+      // items.openFile.addEventListener('click', function (e) {
+      //   eventBus.dispatch('openfile');
+      // });
+      // END SUNVALLEYBRONZE.COM: NOT USING THESE
 
       items.print.addEventListener('click', function (e) {
         eventBus.dispatch('print');

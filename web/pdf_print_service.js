@@ -139,10 +139,11 @@
         }
         OverlayManager.close('printServiceOverlay');
       });
+      closeOptionsOverlay();
     },
 
     renderPages: function () {
-      var pageCount = this.pagesOverview.length;
+      var pageCount = this.pageCount;
       var renderNextPage = function (resolve, reject) {
         this.throwIfInactive();
         if (++this.currentPage >= pageCount) {
@@ -223,37 +224,66 @@
       console.warn('Ignored window.print() because of a pending print job.');
       return;
     }
-    ensureOverlay().then(function () {
-      if (activeService) {
-        OverlayManager.open('printServiceOverlay');
-      }
+
+    ensureOptionsOverlay().then(function() {
+      OverlayManager.open('printOptionsOverlay');
+      document.getElementById('printOptionsCancel').onclick =
+        closeOptionsOverlay;
+
+      document.getElementById('printCurrentPage').onclick = function() {
+        // Displayed page number
+        var currentPageNum = document.getElementById('pageNumber').value;
+        // -1 for pre-increment and -1 because array is zero-indexed
+        var currentPage = currentPageNum - 2;
+        // +1 so a page is rendered and +1 because check is less than
+        var pageCount = currentPage + 2;
+        printFunction(currentPage, pageCount);
+      };
+
+      document.getElementById('printDocument').onclick = function() {
+        printFunction();
+      };
     });
 
-    try {
-      dispatchEvent('beforeprint');
-    } finally {
-      if (!activeService) {
-        console.error('Expected print service to be initialized.');
-        if (OverlayManager.active === 'printServiceOverlay') {
-          OverlayManager.close('printServiceOverlay');
-        }
-        return; // eslint-disable-line no-unsafe-finally
-      }
-      var activeServiceOnEntry = activeService;
-      activeService.renderPages().then(function () {
-        return activeServiceOnEntry.performPrint();
-      }).catch(function () {
-        // Ignore any error messages.
-      }).then(function () {
-        // aborts acts on the "active" print request, so we need to check
-        // whether the print request (activeServiceOnEntry) is still active.
-        // Without the check, an unrelated print request (created after aborting
-        // this print request while the pages were being generated) would be
-        // aborted.
-        if (activeServiceOnEntry.active) {
-          abort();
+    function printFunction(currentPage, pageCount) {
+      ensureOverlay().then(function () {
+        if (activeService) {
+          OverlayManager.open('printServiceOverlay');
         }
       });
+
+      try {
+        dispatchEvent('beforeprint');
+      } finally {
+        if (!activeService) {
+          console.error('Expected print service to be initialized.');
+          if (OverlayManager.active === 'printServiceOverlay') {
+            OverlayManager.close('printServiceOverlay');
+          }
+          return; // eslint-disable-line no-unsafe-finally
+        }
+        var activeServiceOnEntry = activeService;
+        if (currentPage && pageCount) {
+          activeService.currentPage = currentPage;
+          activeService.pageCount = pageCount;
+        } else {
+          activeService.pageCount = activeService.pagesOverview.length;
+        }
+        activeService.renderPages().then(function () {
+          return activeServiceOnEntry.performPrint();
+        }).catch(function () {
+          // Ignore any error messages.
+        }).then(function () {
+          // aborts acts on the "active" print request, so we need to check
+          // whether the print request (activeServiceOnEntry) is still active.
+          // Without the check, an unrelated print request (created after
+          // aborting this print request while the pages were being generated)
+          // would be aborted.
+          if (activeServiceOnEntry.active) {
+            abort();
+          }
+        });
+      }
     }
   };
 
@@ -322,6 +352,24 @@
     };
     window.addEventListener('beforeprint', stopPropagationIfNeeded);
     window.addEventListener('afterprint', stopPropagationIfNeeded);
+  }
+
+  var optionsOverlayPromise;
+  function ensureOptionsOverlay() {
+    if (!optionsOverlayPromise) {
+      optionsOverlayPromise = OverlayManager.register('printOptionsOverlay',
+        document.getElementById('printOptionsOverlay'), closeOptionsOverlay,
+        true);
+      document.getElementById('printOptionsCancel').onclick =
+        closeOptionsOverlay;
+    }
+    return optionsOverlayPromise;
+  }
+
+  function closeOptionsOverlay() {
+    if (OverlayManager.active === 'printOptionsOverlay') {
+      OverlayManager.close('printOptionsOverlay');
+    }
   }
 
   var overlayPromise;

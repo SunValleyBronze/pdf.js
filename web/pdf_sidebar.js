@@ -90,7 +90,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
     this.toggleButton = options.toggleButton;
 
     this.thumbnailButton = options.thumbnailButton;
-    this.outlineButton = options.outlineButton;
     this.attachmentsButton = options.attachmentsButton;
 
     this.thumbnailView = options.thumbnailView;
@@ -107,7 +106,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
       this.close();
       this.switchView(SidebarView.THUMBS);
 
-      this.outlineButton.disabled = false;
       this.attachmentsButton.disabled = false;
     },
 
@@ -173,7 +171,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
       switch (view) {
         case SidebarView.THUMBS:
           this.thumbnailButton.classList.add('toggled');
-          this.outlineButton.classList.remove('toggled');
           this.attachmentsButton.classList.remove('toggled');
 
           this.thumbnailView.classList.remove('hidden');
@@ -185,24 +182,11 @@ var PDFSidebar = (function PDFSidebarClosure() {
             shouldForceRendering = true;
           }
           break;
-        case SidebarView.OUTLINE:
-          if (this.outlineButton.disabled) {
-            return;
-          }
-          this.thumbnailButton.classList.remove('toggled');
-          this.outlineButton.classList.add('toggled');
-          this.attachmentsButton.classList.remove('toggled');
-
-          this.thumbnailView.classList.add('hidden');
-          this.outlineView.classList.remove('hidden');
-          this.attachmentsView.classList.add('hidden');
-          break;
         case SidebarView.ATTACHMENTS:
           if (this.attachmentsButton.disabled) {
             return;
           }
           this.thumbnailButton.classList.remove('toggled');
-          this.outlineButton.classList.remove('toggled');
           this.attachmentsButton.classList.add('toggled');
 
           this.thumbnailView.classList.add('hidden');
@@ -328,25 +312,8 @@ var PDFSidebar = (function PDFSidebarClosure() {
         self.switchView(SidebarView.THUMBS);
       });
 
-      self.outlineButton.addEventListener('click', function() {
-        self.switchView(SidebarView.OUTLINE);
-      });
-      self.outlineButton.addEventListener('dblclick', function() {
-        self.pdfOutlineViewer.toggleOutlineTree();
-      });
-
       self.attachmentsButton.addEventListener('click', function() {
         self.switchView(SidebarView.ATTACHMENTS);
-      });
-
-      // Disable/enable views.
-      self.eventBus.on('outlineloaded', function(e) {
-        var outlineCount = e.outlineCount;
-
-        self.outlineButton.disabled = !outlineCount;
-        if (!outlineCount && self.active === SidebarView.OUTLINE) {
-          self.switchView(SidebarView.THUMBS);
-        }
       });
 
       self.eventBus.on('attachmentsloaded', function(e) {

@@ -90,7 +90,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
     this.toggleButton = options.toggleButton;
 
     this.thumbnailButton = options.thumbnailButton;
-    this.attachmentsButton = options.attachmentsButton;
 
     this.thumbnailView = options.thumbnailView;
     this.outlineView = options.outlineView;
@@ -106,7 +105,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
       this.close();
       this.switchView(SidebarView.THUMBS);
 
-      this.attachmentsButton.disabled = false;
     },
 
     /**
@@ -171,7 +169,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
       switch (view) {
         case SidebarView.THUMBS:
           this.thumbnailButton.classList.add('toggled');
-          this.attachmentsButton.classList.remove('toggled');
 
           this.thumbnailView.classList.remove('hidden');
           this.outlineView.classList.add('hidden');
@@ -181,17 +178,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
             this._updateThumbnailViewer();
             shouldForceRendering = true;
           }
-          break;
-        case SidebarView.ATTACHMENTS:
-          if (this.attachmentsButton.disabled) {
-            return;
-          }
-          this.thumbnailButton.classList.remove('toggled');
-          this.attachmentsButton.classList.add('toggled');
-
-          this.thumbnailView.classList.add('hidden');
-          this.outlineView.classList.add('hidden');
-          this.attachmentsView.classList.remove('hidden');
           break;
         default:
           console.error('PDFSidebar_switchView: "' + view +
@@ -310,19 +296,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
       // Buttons for switching views.
       self.thumbnailButton.addEventListener('click', function() {
         self.switchView(SidebarView.THUMBS);
-      });
-
-      self.attachmentsButton.addEventListener('click', function() {
-        self.switchView(SidebarView.ATTACHMENTS);
-      });
-
-      self.eventBus.on('attachmentsloaded', function(e) {
-        var attachmentsCount = e.attachmentsCount;
-
-        self.attachmentsButton.disabled = !attachmentsCount;
-        if (!attachmentsCount && self.active === SidebarView.ATTACHMENTS) {
-          self.switchView(SidebarView.THUMBS);
-        }
       });
 
       // Update the thumbnailViewer, if visible, when exiting presentation mode.

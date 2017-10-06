@@ -102,11 +102,10 @@ function getViewerConfiguration() {
       // Divs (and sidebar button)
       mainContainer: document.getElementById('mainContainer'),
       outerContainer: document.getElementById('outerContainer'),
-      toggleButton: document.getElementById('sidebarToggle'),
+      // Map toggleButton to the element that used to be thumbnailButton
+      toggleButton: document.getElementById('viewThumbnail'),
       // Buttons
-      thumbnailButton: document.getElementById('viewThumbnail'),
-      outlineButton: document.getElementById('viewOutline'),
-      attachmentsButton: document.getElementById('viewAttachments'),
+      // thumbnailButton: document.getElementById('viewThumbnail'),
       // Views
       thumbnailView: document.getElementById('thumbnailView'),
       outlineView: document.getElementById('outlineView'),

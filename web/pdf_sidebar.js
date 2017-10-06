@@ -89,9 +89,7 @@ var PDFSidebar = (function PDFSidebarClosure() {
     this.eventBus = options.eventBus;
     this.toggleButton = options.toggleButton;
 
-    this.thumbnailButton = options.thumbnailButton;
-    this.outlineButton = options.outlineButton;
-    this.attachmentsButton = options.attachmentsButton;
+    // this.thumbnailButton = options.thumbnailButton;
 
     this.thumbnailView = options.thumbnailView;
     this.outlineView = options.outlineView;
@@ -107,8 +105,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
       this.close();
       this.switchView(SidebarView.THUMBS);
 
-      this.outlineButton.disabled = false;
-      this.attachmentsButton.disabled = false;
     },
 
     /**
@@ -172,9 +168,7 @@ var PDFSidebar = (function PDFSidebarClosure() {
 
       switch (view) {
         case SidebarView.THUMBS:
-          this.thumbnailButton.classList.add('toggled');
-          this.outlineButton.classList.remove('toggled');
-          this.attachmentsButton.classList.remove('toggled');
+          // this.thumbnailButton.classList.add('toggled');
 
           this.thumbnailView.classList.remove('hidden');
           this.outlineView.classList.add('hidden');
@@ -184,30 +178,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
             this._updateThumbnailViewer();
             shouldForceRendering = true;
           }
-          break;
-        case SidebarView.OUTLINE:
-          if (this.outlineButton.disabled) {
-            return;
-          }
-          this.thumbnailButton.classList.remove('toggled');
-          this.outlineButton.classList.add('toggled');
-          this.attachmentsButton.classList.remove('toggled');
-
-          this.thumbnailView.classList.add('hidden');
-          this.outlineView.classList.remove('hidden');
-          this.attachmentsView.classList.add('hidden');
-          break;
-        case SidebarView.ATTACHMENTS:
-          if (this.attachmentsButton.disabled) {
-            return;
-          }
-          this.thumbnailButton.classList.remove('toggled');
-          this.outlineButton.classList.remove('toggled');
-          this.attachmentsButton.classList.add('toggled');
-
-          this.thumbnailView.classList.add('hidden');
-          this.outlineView.classList.add('hidden');
-          this.attachmentsView.classList.remove('hidden');
           break;
         default:
           console.error('PDFSidebar_switchView: "' + view +
@@ -267,6 +237,7 @@ var PDFSidebar = (function PDFSidebarClosure() {
         this.close();
       } else {
         this.open();
+        this.switchView(SidebarView.THUMBS);
       }
     },
 
@@ -320,41 +291,6 @@ var PDFSidebar = (function PDFSidebarClosure() {
       self.mainContainer.addEventListener('transitionend', function(evt) {
         if (evt.target === /* mainContainer */ this) {
           self.outerContainer.classList.remove('sidebarMoving');
-        }
-      });
-
-      // Buttons for switching views.
-      self.thumbnailButton.addEventListener('click', function() {
-        self.switchView(SidebarView.THUMBS);
-      });
-
-      self.outlineButton.addEventListener('click', function() {
-        self.switchView(SidebarView.OUTLINE);
-      });
-      self.outlineButton.addEventListener('dblclick', function() {
-        self.pdfOutlineViewer.toggleOutlineTree();
-      });
-
-      self.attachmentsButton.addEventListener('click', function() {
-        self.switchView(SidebarView.ATTACHMENTS);
-      });
-
-      // Disable/enable views.
-      self.eventBus.on('outlineloaded', function(e) {
-        var outlineCount = e.outlineCount;
-
-        self.outlineButton.disabled = !outlineCount;
-        if (!outlineCount && self.active === SidebarView.OUTLINE) {
-          self.switchView(SidebarView.THUMBS);
-        }
-      });
-
-      self.eventBus.on('attachmentsloaded', function(e) {
-        var attachmentsCount = e.attachmentsCount;
-
-        self.attachmentsButton.disabled = !attachmentsCount;
-        if (!attachmentsCount && self.active === SidebarView.ATTACHMENTS) {
-          self.switchView(SidebarView.THUMBS);
         }
       });
 

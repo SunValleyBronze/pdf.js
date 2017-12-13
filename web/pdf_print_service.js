@@ -263,7 +263,7 @@
           return; // eslint-disable-line no-unsafe-finally
         }
         var activeServiceOnEntry = activeService;
-        if (currentPage && pageCount) {
+        if (currentPage !== null && currentPage !== undefined && pageCount !== null && pageCount !== undefined) {
           activeService.currentPage = currentPage;
           activeService.pageCount = pageCount;
         } else {
